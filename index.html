@@ -159,19 +159,13 @@ function updateChart(totalMV){
 }
 
 // ---- Fetchers (Yahoo direct; fallback autoc + query2 + quoteSummary) ----
-<script>
-// ====== CORS Proxies (حل مشكلة الحجب على GitHub Pages) ======
-const PROXIES = [
-  "https://cors.isomorphic-git.org/", // يشتغل مع رابط خام
-  "https://corsproxy.io/?"            // يحتاج url مشفرة
-];
-
-function prox(url, base) {
-  // corsproxy.io يحتاج encodeURIComponent
-  return base.endsWith("?") ? (base + encodeURIComponent(url)) : (base + url);
-}
-
 async function fetchJSON(url){
+  const PROXIES = [
+    "https://cors.isomorphic-git.org/",
+    "https://corsproxy.io/?"
+  ];
+  const prox = (u, base) => base.endsWith("?") ? (base + encodeURIComponent(u)) : (base + u);
+
   for (const p of PROXIES){
     try{
       const r = await fetch(prox(url, p));
@@ -180,7 +174,6 @@ async function fetchJSON(url){
   }
   throw new Error("Failed via proxies");
 }
-</script>
 
 async function resolveSymbol(sym){
   try{
