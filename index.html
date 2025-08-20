@@ -160,20 +160,18 @@ function updateChart(totalMV){
 
 // ---- Fetchers (Yahoo direct; fallback autoc + query2 + quoteSummary) ----
 async function fetchJSON(url){
-  const PROXIES = [
-    "https://cors.isomorphic-git.org/",
-    "https://corsproxy.io/?"
+  const proxies = [
+    (u) => "https://cors.isomorphic-git.org/" + u,
+    (u) => "https://corsproxy.io/?" + encodeURIComponent(u),
+    (u) => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u), // ثالث احتياط
   ];
-  const prox = (u, base) => base.endsWith("?") ? (base + encodeURIComponent(u)) : (base + u);
-
-  for (const p of PROXIES){
+  for (const build of proxies){
     try{
-      const r = await fetch(prox(url, p));
+      const r = await fetch(build(url));
       if (r.ok) return await r.json();
     }catch(e){}
   }
   throw new Error("Failed via proxies");
-}
 
 async function resolveSymbol(sym){
   try{
